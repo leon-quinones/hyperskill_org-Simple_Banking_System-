@@ -1,6 +1,7 @@
 from model.credit_card import CreditCard
 from model.user import User, UserDto
 
+
 class UserRepository:
     def __init__(self):
         self.users: dict = { }

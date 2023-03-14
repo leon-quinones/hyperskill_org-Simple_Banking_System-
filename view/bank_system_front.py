@@ -1,4 +1,4 @@
-from controller.menu_controller import UserController
+from controller.user_controller import UserController
 from model.user import User
 
 
@@ -37,9 +37,6 @@ class Menu:
         self.__print_menu(self.user_options)
         return self.user_menu()
 
-
-
-
     def select_main_menu(self, id_option: int):
         if 0 >= id_option or id_option > len(self.menu_options):
             raise Exception("Option not supported")
@@ -62,11 +59,8 @@ class Menu:
             if user is None:
                 print('Wrong card number or PIN!')
 
-
-
     def select_user_menu(self, user_option: int):
         pass
-
 
     def get_user_input(self):
         try:
