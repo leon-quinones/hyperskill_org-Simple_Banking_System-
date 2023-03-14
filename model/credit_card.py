@@ -35,5 +35,5 @@ class CreditCard:
         print(self.number)
 
 
-card = CreditCard(250000000)
-print(card.number)
+# card = CreditCard(250000000)
+# print(card.number)

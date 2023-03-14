@@ -1,4 +1,5 @@
-import view.bank_system_front
+import view.bank_system_front as view
+import model.credit_card as model
 
 
 class AppMeta(type):
@@ -12,5 +13,18 @@ class AppMeta(type):
 
 
 class BankApp(metaclass=AppMeta):
-    def some_business_logic(self):
-        pass
+    def __init__(self):
+        self.__is_running = None
+
+    def run(self):
+        while self.__is_running:
+            menu = view.Menu()
+            self.__is_running = menu.main_menu()
+        print('Bye!')
+
+    def stop_app(self):
+        self.__is_running = False
+
+
+app = BankApp()
+app.run()
