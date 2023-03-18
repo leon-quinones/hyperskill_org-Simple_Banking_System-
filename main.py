@@ -1,5 +1,5 @@
 import view.bank_system_front as view
-import model.credit_card as model
+from controller.user_controller import UserController, UserRepository
 
 
 class AppMeta(type):
@@ -14,12 +14,15 @@ class AppMeta(type):
 
 class BankApp(metaclass=AppMeta):
     def __init__(self):
-        self.__is_running = None
+        self.__is_running = True
 
     def run(self):
+        __user_repository: UserRepository = UserRepository()
+        controller = UserController(__user_repository)
+        menu = view.Menu(controller=controller)
         while self.__is_running:
-            menu = view.Menu()
             self.__is_running = menu.main_menu()
+            print(f'This is app_running: {self.__is_running}')
         print('Bye!')
 
     def stop_app(self):

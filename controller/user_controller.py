@@ -37,9 +37,21 @@ class UserController:
         user = User()
         user.create_pin()
         user.assign_credit_card(CreditCard(user_base_number))
-        user.balance = 0
+        user.assign_balance(0.0)
         self.user_repository.create_user(user)
+        print(user.pin, user.credit_card)
         return user
+
+    def get_option(self, option: int, **kwargs):
+        if option == 1:
+            return self.create_account()
+
+        if option == 2:
+            card_number = kwargs.get("card_number", None)
+            user_pin = kwargs.get("user_pin", None)
+            if card_number is None or user_pin is None:
+                raise Exception("Please insert a valid card number and PIN")
+            return self.login(card_number, user_pin)
 
 
 

@@ -1,9 +1,9 @@
-from controller.user_controller import UserController
+from controller.user_controller import UserController, UserRepository
 from model.user import User
 
 
 class Menu:
-    def __init__(self, controller=None, menu_options=None, user_options = None):
+    def __init__(self, controller=None, menu_options=None, user_options=None):
         if menu_options is None:
             menu_options = {
                 1: 'Create an account',
@@ -12,7 +12,8 @@ class Menu:
             }
 
         if controller is None:
-            controller = UserController()
+            __user_repository: UserRepository = UserRepository()
+            controller = UserController(__user_repository)
 
         if user_options is None:
             user_options = {
@@ -25,42 +26,66 @@ class Menu:
         self.menu_options = menu_options
         self.user_options = user_options
 
-    def __print_menu(self, menu: dict):
+    @staticmethod
+    def __print_menu(menu: dict):
         for i, key in enumerate(menu.keys()):
             print(f'{key}. {menu.get(key)}')
+
+    @staticmethod
+    def __validate_selected_option(id_option: int, menu_options: dict):
+        if 0 > id_option or id_option > len(menu_options):
+            raise Exception("Option not supported")
+        if id_option == 0:
+            return False
 
     def main_menu(self):
         self.__print_menu(self.menu_options)
         return self.select_main_menu(self.get_user_input())
 
-    def user_menu(self):
+    def user_menu(self, user: User):
         self.__print_menu(self.user_options)
-        return self.user_menu()
+        return self.select_user_menu(user, self.get_user_input())
 
     def select_main_menu(self, id_option: int):
-        if 0 >= id_option or id_option > len(self.menu_options):
-            raise Exception("Option not supported")
-        if id_option == 0:
-            return False
-
+        print(type(id_option))
+        Menu.__validate_selected_option(id_option, self.menu_options)
         if id_option == 1:
             user: User = self.controller.get_option(id_option)
             card_number = user.credit_card.number
             print(f"Your card has been created \n"
-              f"Your card number: \n"
-              f"{card_number} \n"
-              f"Your card PIN: \n"
-              f"{user.pin}")
+                  f"Your card number: \n"
+                  f"{card_number} \n"
+                  f"Your card PIN: \n"
+                  f"{user.pin}")
             return True
 
         if id_option == 2:
-            self.get_user_credentials()
-            user: User = self.controller.get_option(id_option)
+            card_number, pin = self.get_user_credentials()
+            user: User = self.controller.get_option(id_option, card_number=card_number, user_pin=pin)
             if user is None:
                 print('Wrong card number or PIN!')
+            else:
+                user_is_logged = True
+                user_run_app = True
+                print('You have successfully logged in!')
+                while user_is_logged and user_run_app:
+                    user_is_logged, user_run_app = self.user_menu(user)
 
-    def select_user_menu(self, user_option: int):
-        pass
+                if user_run_app is False:
+                    return False
+                else:
+                    return True
+
+    def select_user_menu(self, user: User, id_option: int):
+        Menu.__validate_selected_option(id_option, self.user_options)
+        if id_option == 0:
+            return False, False
+        if id_option == 1:
+            print(f'Balance: {user.balance}')
+            return True, True
+        if id_option == 2:
+            print(f'You have successfully logged out!')
+            return False, True
 
     def get_user_input(self):
         try:
@@ -83,15 +108,14 @@ class Menu:
             print("Please enter a valid 16-digit credit card number...")
             self.get_user_credentials()
         try:
-            user_pin = input('Enter your card number: \n')
+            user_pin = input('Enter your PIN code: \n')
             if len(user_pin) != 4:
                 raise Exception()
         except ValueError or Exception:
             print("Please enter a valid pin number...")
             self.get_user_credentials()
 
-        return credit_card, user_pin
-
+        return int(credit_card), int(user_pin)
 
 # menu = Menu()
-# menu.print_menu()
+# menu.main_menu()
