@@ -24,15 +24,10 @@ class CreditCard:
         self.__customer_number = random.randint(initial_customer_number, 999999999)
 
     def build_card_number(self):
-        print(CreditCard.__inn)
-        print(self.__customer_number)
-        print(self.__checknumber)
         self.number = CreditCard.__inn * CreditCard.__inn_factor
-        print(self.number)
         self.number += self.__customer_number * CreditCard.__customer_number_factor
-        print(self.number)
         self.number += self.__checknumber
-        print(self.number)
+
 
 
 # card = CreditCard(250000000)

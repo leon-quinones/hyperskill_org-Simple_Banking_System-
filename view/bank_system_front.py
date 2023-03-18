@@ -47,8 +47,8 @@ class Menu:
         return self.select_user_menu(user, self.get_user_input())
 
     def select_main_menu(self, id_option: int):
-        print(type(id_option))
         Menu.__validate_selected_option(id_option, self.menu_options)
+        print()
         if id_option == 1:
             user: User = self.controller.get_option(id_option)
             card_number = user.credit_card.number
@@ -57,18 +57,24 @@ class Menu:
                   f"{card_number} \n"
                   f"Your card PIN: \n"
                   f"{user.pin}")
+            print()
             return True
 
         if id_option == 2:
             card_number, pin = self.get_user_credentials()
             user: User = self.controller.get_option(id_option, card_number=card_number, user_pin=pin)
             if user is None:
+                print()
                 print('Wrong card number or PIN!')
+                print()
+                return True
             else:
                 user_is_logged = True
                 user_run_app = True
+                print()
                 print('You have successfully logged in!')
                 while user_is_logged and user_run_app:
+                    print()
                     user_is_logged, user_run_app = self.user_menu(user)
 
                 if user_run_app is False:
@@ -78,13 +84,14 @@ class Menu:
 
     def select_user_menu(self, user: User, id_option: int):
         Menu.__validate_selected_option(id_option, self.user_options)
+        print()
         if id_option == 0:
             return False, False
         if id_option == 1:
             print(f'Balance: {user.balance}')
             return True, True
         if id_option == 2:
-            print(f'You have successfully logged out!')
+            print(f'You have successfully logged out!\n')
             return False, True
 
     def get_user_input(self):

@@ -8,8 +8,9 @@ class UserRepository:
 
     def find_user_by_credentials(self,credit_card_number: int, user_pin: int):
         user = self.users.get(credit_card_number)
-        if user.pin != user_pin:
-            user = None
+        if user is not None:
+            if user.pin != user_pin:
+                user = None
         return user
 
     def create_user(self, userdto: UserDto):
@@ -39,7 +40,6 @@ class UserController:
         user.assign_credit_card(CreditCard(user_base_number))
         user.assign_balance(0.0)
         self.user_repository.create_user(user)
-        print(user.pin, user.credit_card)
         return user
 
     def get_option(self, option: int, **kwargs):

@@ -22,7 +22,6 @@ class BankApp(metaclass=AppMeta):
         menu = view.Menu(controller=controller)
         while self.__is_running:
             self.__is_running = menu.main_menu()
-            print(f'This is app_running: {self.__is_running}')
         print('Bye!')
 
     def stop_app(self):
