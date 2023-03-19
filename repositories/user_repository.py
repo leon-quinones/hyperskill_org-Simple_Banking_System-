@@ -39,6 +39,8 @@ class UserRepository:
         # self.users[userdto.credit_card.number] = userdto
 
     def __build_user_from_database(self, user_data: tuple):
+        if user_data is None:
+            return None
         card = CreditCard()
         card.number: int = user_data[2]
         user = User()
