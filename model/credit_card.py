@@ -2,21 +2,24 @@ import random
 
 
 class CreditCard:
-    __inn: int = 400000
-    __inn_factor = 10 ** 10
-    __customer_number_factor = 10
+    __inn = '400000'
 
     def __init__(self, initial_customer_number: int):
-        self.__checknumber = 0
+        self.digits = []
         self.__customer_number = 0
         self.number = 0
 
-        self.build_checksum()
         self.build_customer_number(initial_customer_number)
         self.build_card_number()
 
     def build_checksum(self):
-        self.__checknumber = random.randint(0, 9)
+        aux = self.digits.copy()
+        print(aux)
+        for i in range(0, len(self.digits), 2):
+            c = self.digits[i] * 2  # calculate value
+            aux[i] = c - 9 if c > 9 else c
+        checknum = 10 - (sum(aux) % 10)
+        return 0 if checknum > 9 else checknum
 
     def build_customer_number(self, initial_customer_number: int):
         if initial_customer_number // 100000000 < 1 or initial_customer_number // 100000000 > 9:
@@ -24,11 +27,8 @@ class CreditCard:
         self.__customer_number = random.randint(initial_customer_number, 999999999)
 
     def build_card_number(self):
-        self.number = CreditCard.__inn * CreditCard.__inn_factor
-        self.number += self.__customer_number * CreditCard.__customer_number_factor
-        self.number += self.__checknumber
+        self.digits = list(map(int, CreditCard.__inn))
+        self.digits += list(map(int, str(self.__customer_number)))
+        self.digits += [self.build_checksum()]
+        self.number = int(''.join(map(str, self.digits)))
 
-
-
-# card = CreditCard(250000000)
-# print(card.number)

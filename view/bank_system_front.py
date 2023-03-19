@@ -35,8 +35,6 @@ class Menu:
     def __validate_selected_option(id_option: int, menu_options: dict):
         if 0 > id_option or id_option > len(menu_options):
             raise Exception("Option not supported")
-        if id_option == 0:
-            return False
 
     def main_menu(self):
         self.__print_menu(self.menu_options)
