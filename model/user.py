@@ -5,6 +5,8 @@ from model.credit_card import CreditCard
 
 class User:
     def __init__(self):
+        self.id = 0
+        self.name = ''
         self.credit_card: CreditCard = None
         self.pin: int = None
         self.balance: float = None
@@ -21,8 +23,8 @@ class User:
 
 
 class UserDto:
-    def __init__(self, credit_card_number: int, user_pin: int, balance: float, name: str):
-        self.credit_card: CreditCard = credit_card_number
+    def __init__(self, credit_card: CreditCard, user_pin: int, balance: int, name: str):
+        self.credit_card: CreditCard = credit_card
         self.pin: int = user_pin
-        self.balance = balance
-        self.name = name
+        self.balance: int = balance
+        self.name: str = name

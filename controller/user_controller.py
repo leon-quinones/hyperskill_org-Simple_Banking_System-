@@ -1,22 +1,6 @@
 from model.credit_card import CreditCard
 from model.user import User, UserDto
-
-
-class UserRepository:
-    def __init__(self):
-        self.users: dict = { }
-
-    def find_user_by_credentials(self,credit_card_number: int, user_pin: int):
-        user = self.users.get(credit_card_number)
-        if user is not None:
-            if user.pin != user_pin:
-                user = None
-        return user
-
-    def create_user(self, userdto: UserDto):
-        self.users[userdto.credit_card.number] = userdto
-
-
+from repositories.user_repository import UserRepository
 class UserController:
 
     def __init__(self, __user_repository: UserRepository):
@@ -34,11 +18,12 @@ class UserController:
             user = None
         return user
 
-    def create_account(self, user_base_number=250000000):
+    def create_account(self, user_base_number=250000000, name="John Smith"):
         user = User()
         user.create_pin()
+        user.name = name
         user.assign_credit_card(CreditCard(user_base_number))
-        user.assign_balance(0.0)
+        user.assign_balance(0)
         self.user_repository.create_user(user)
         return user
 
