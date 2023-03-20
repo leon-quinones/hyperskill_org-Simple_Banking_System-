@@ -11,7 +11,6 @@ class User:
         self.pin: int = None
         self.balance: float = None
 
-
     def create_pin(self):
         self.pin = random.randint(1000, 9999)
 

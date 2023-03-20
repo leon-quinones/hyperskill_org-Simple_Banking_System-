@@ -32,11 +32,12 @@ class BankApp(metaclass=AppMeta):
         self.conn.commit()
         self.database_cursor.execute(
             'CREATE TABLE IF NOT EXISTS user ('
-            'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+            'id INTEGER PRIMARY KEY AUTOINCREMENT, '
             'name TEXT, '
-            'card_id INTEGER NOT NULL,'
-            'CONSTRAINT fk_card_user FOREIGN KEY (card_id)'
-            'REFERENCES card (id)'
+            'card_id INTEGER NOT NULL, '
+            'CONSTRAINT fk_card_user FOREIGN KEY (card_id) '
+            'REFERENCES card (id) '
+            'ON DELETE CASCADE'
             ');')
         self.conn.commit()
 

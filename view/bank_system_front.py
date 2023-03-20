@@ -1,9 +1,12 @@
+from sqlite3 import OperationalError
+
 from controller.user_controller import UserController, UserRepository
 from model.user import User
 
 
 class Menu:
     def __init__(self, controller=None, menu_options=None, user_options=None):
+        self.user = None
         if menu_options is None:
             menu_options = {
                 1: 'Create an account',
@@ -18,7 +21,10 @@ class Menu:
         if user_options is None:
             user_options = {
                 1: 'Balance',
-                2: 'Logout',
+                2: 'Add income',
+                3: 'Do transfer',
+                4: 'Close account',
+                5: 'Log out',
                 0: 'Exit'
             }
 
@@ -38,30 +44,30 @@ class Menu:
 
     def main_menu(self):
         self.__print_menu(self.menu_options)
-        return self.select_main_menu(self.get_user_input())
+        return self.select_main_menu(self.get_user_option_input())
 
-    def user_menu(self, user: User):
+    def user_menu(self):
         self.__print_menu(self.user_options)
-        return self.select_user_menu(user, self.get_user_input())
+        return self.select_user_menu(self.get_user_option_input())
 
     def select_main_menu(self, id_option: int):
         Menu.__validate_selected_option(id_option, self.menu_options)
         print()
         if id_option == 1:
-            user: User = self.controller.get_option(id_option)
-            card_number = user.credit_card.number
+            self.user: User = self.controller.get_option(id_option)
+            card_number = self.user.credit_card.number
             print(f"Your card has been created \n"
                   f"Your card number: \n"
                   f"{card_number} \n"
                   f"Your card PIN: \n"
-                  f"{user.pin}")
+                  f"{self.user.pin}")
             print()
             return True
 
         if id_option == 2:
             card_number, pin = self.get_user_credentials()
-            user: User = self.controller.get_option(id_option, card_number=card_number, user_pin=pin)
-            if user is None:
+            self.user: User = self.controller.get_option(id_option, card_number=card_number, user_pin=pin)
+            if self.user is None:
                 print()
                 print('Wrong card number or PIN!')
                 print()
@@ -73,26 +79,58 @@ class Menu:
                 print('You have successfully logged in!')
                 while user_is_logged and user_run_app:
                     print()
-                    user_is_logged, user_run_app = self.user_menu(user)
+                    print(f'este es user obtenido: {self.user.__dict__}')
+                    user_is_logged, user_run_app = self.user_menu()
 
                 if user_run_app is False:
                     return False
                 else:
                     return True
 
-    def select_user_menu(self, user: User, id_option: int):
+    def select_user_menu(self, id_option: int):
         Menu.__validate_selected_option(id_option, self.user_options)
         print()
+        print(f'este es user pasado: {self.user.__dict__}')
         if id_option == 0:
             return False, False
         if id_option == 1:
-            print(f'Balance: {user.balance}')
+            # user_balance = self.controller.get_user_balance(self.user.id)
+            # if user_balance is None:
+            #     raise OperationalError
+            #
+            # print(f'Balance: {user_balance}')
+            print(f'Balance: {self.user.balance}')
             return True, True
-        if id_option == 2:
+        if id_option == 5:
             print(f'You have successfully logged out!\n')
             return False, True
+        if id_option == 2:
+            print(f'Enter income: ')
+            income = self.get_user_income()
+            account_id = self.controller.get_card_id(self.user.id)
+            if account_id is None:
+                raise  OperationalError(f'card associated to user: {self.user.id} was not found')
+            transaction_result = self.controller.change_balance(account_id, income)
+            if transaction_result is False:
+                raise OperationalError
+            print('Income was added!')
+            self.user.balance += income
+            return True, True
+        if id_option == 3:
+            pass
 
-    def get_user_input(self):
+
+    def get_user_income(self):
+        try:
+            income = int(input())
+            if income <= 0:
+                raise ValueError
+        except ValueError:
+            print("Please enter a valid income amount...")
+            self.print_menu()
+        return income
+
+    def get_user_option_input(self):
         try:
             option = int(input())
         except ValueError:
