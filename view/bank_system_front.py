@@ -1,5 +1,5 @@
 from sqlite3 import OperationalError
-
+from collections import namedtuple
 from controller.user_controller import UserController, UserRepository
 from model.user import User
 
@@ -79,7 +79,6 @@ class Menu:
                 print('You have successfully logged in!')
                 while user_is_logged and user_run_app:
                     print()
-                    print(f'este es user obtenido: {self.user.__dict__}')
                     user_is_logged, user_run_app = self.user_menu()
 
                 if user_run_app is False:
@@ -90,7 +89,6 @@ class Menu:
     def select_user_menu(self, id_option: int):
         Menu.__validate_selected_option(id_option, self.user_options)
         print()
-        print(f'este es user pasado: {self.user.__dict__}')
         if id_option == 0:
             return False, False
         if id_option == 1:
@@ -109,7 +107,7 @@ class Menu:
             income = self.get_user_income()
             account_id = self.controller.get_card_id(self.user.id)
             if account_id is None:
-                raise  OperationalError(f'card associated to user: {self.user.id} was not found')
+                raise OperationalError(f'card associated to user: {self.user.id} was not found')
             transaction_result = self.controller.change_balance(account_id, income)
             if transaction_result is False:
                 raise OperationalError
@@ -117,8 +115,29 @@ class Menu:
             self.user.balance += income
             return True, True
         if id_option == 3:
-            pass
-
+            card_number = self.get_credit_card_number('Enter card number:')
+            is_card_valid = self.luhn_check(card_number)
+            if is_card_valid is False:
+                print('Probably you made a mistake in the card number. Please try again!')
+                return True, True
+            print(f'Enter how much money you want to transfer:')
+            transaction_amount = self.get_user_income()
+            user_card_id = self.controller.get_card_id(self.user.id)
+            TransactionData = namedtuple('TransactionData', ['user_id', 'user_card_id', 'card_number_to_transfer', 'new_balance'])
+            # user_card_id: int, card_number_to_transfer: int, new_balance: int
+            transaction_data = TransactionData(self.user.id, user_card_id, card_number, transaction_amount)
+            transaction_result = self.controller.make_transaction(transaction_data)
+            if transaction_result is False:
+                raise OperationalError('Algo paso! en la database')
+            print('Success!')
+            self.user.balance -= transaction_amount
+            return True, True
+        if id_option == 4:
+            account_was_closed = self.controller.delete_account(self.user.id)
+            if account_was_closed is False:
+                raise OperationalError('Lol algo paso')
+            print('The account has been closed!')
+            return False, True
 
     def get_user_income(self):
         try:
@@ -130,6 +149,7 @@ class Menu:
             self.print_menu()
         return income
 
+
     def get_user_option_input(self):
         try:
             option = int(input())
@@ -138,18 +158,31 @@ class Menu:
             self.print_menu()
         return int(option)
 
-    def get_user_credentials(self):
-        credit_card = None
-        user_pin = None
+    def get_credit_card_number(self, message: str):
         try:
-            print('Enter your card number:')
+            print(message)
             credit_card = input()
             if len(credit_card) != 16:
                 print("card number must have 16 digits.")
                 raise Exception()
+            return credit_card
         except ValueError or Exception():
             print("Please enter a valid 16-digit credit card number...")
-            self.get_user_credentials()
+            self.get_credit_card_number()
+
+    def get_user_credentials(self):
+        credit_card = None
+        user_pin = None
+        credit_card = self.get_credit_card_number('Enter your card number:')
+        # try:
+        #     print('Enter your card number:')
+        #     credit_card = input()
+        #     if len(credit_card) != 16:
+        #         print("card number must have 16 digits.")
+        #         raise Exception()
+        # except ValueError or Exception():
+        #     print("Please enter a valid 16-digit credit card number...")
+        #     self.get_user_credentials()
         try:
             user_pin = input('Enter your PIN code: \n')
             if len(user_pin) != 4:
@@ -160,5 +193,8 @@ class Menu:
 
         return int(credit_card), int(user_pin)
 
+    def luhn_check(self, credit_card_number: str):
+        card_number = list(map(int, credit_card_number))
+        return True if sum(card_number) % 10 else False
 # menu = Menu()
 # menu.main_menu()
