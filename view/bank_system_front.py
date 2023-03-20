@@ -124,7 +124,7 @@ class Menu:
             account_to_transfer_id = self.controller.get_account_by_card_number(card_number)
             if account_to_transfer_id is None:
                 print('Such a card does not exist.')
-                return  True, True
+                return True, True
             transaction_amount = self.get_user_income()
             user_card_id = self.controller.get_card_id(self.user.id)
             TransactionData = namedtuple('TransactionData', ['user_id', 'user_card_id', 'account_to_transfer_id',
@@ -149,19 +149,18 @@ class Menu:
             income = int(input())
             if income <= 0:
                 raise ValueError
+            return income
         except ValueError:
             print("Please enter a valid income amount...")
-            self.print_menu()
-        return income
-
+            self.get_user_income()
 
     def get_user_option_input(self):
         try:
             option = int(input())
+            return option
         except ValueError:
             print("Please enter a valid option number...")
-            self.print_menu()
-        return int(option)
+            self.__print_menu(self.user_options)
 
     def get_credit_card_number(self, message: str):
         try:
@@ -173,10 +172,9 @@ class Menu:
             return credit_card
         except ValueError or Exception():
             print("Please enter a valid 16-digit credit card number...")
-            self.get_credit_card_number()
+            self.get_credit_card_number(message)
 
     def get_user_credentials(self):
-        credit_card = None
         user_pin = None
         credit_card = self.get_credit_card_number('Enter your card number:')
         # try:
@@ -197,6 +195,7 @@ class Menu:
             self.get_user_credentials()
 
         return int(credit_card), int(user_pin)
+
     @staticmethod
     def luhn_check(credit_card_number: str):
         card_number = list(map(int, credit_card_number))
@@ -206,6 +205,8 @@ class Menu:
             aux[i] = c - 9 if c > 9 else c
         print(sum(aux))
         return True if sum(aux) % 10 == 0 else False
+
+
 print(Menu.luhn_check('4000003972196502'))
 print(Menu.luhn_check('4000003972196501'))
 

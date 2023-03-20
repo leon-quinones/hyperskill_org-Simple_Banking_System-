@@ -30,4 +30,3 @@ class CreditCard:
         self.__digits += list(map(int, str(self.__customer_number)))
         self.__digits += [self.build_checksum()]
         self.number = int(''.join(map(str, self.__digits)))
-

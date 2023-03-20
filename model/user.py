@@ -7,9 +7,9 @@ class User:
     def __init__(self):
         self.id = 0
         self.name = ''
-        self.credit_card: CreditCard = None
-        self.pin: int = None
-        self.balance: float = None
+        self.credit_card = None
+        self.pin = None
+        self.balance = None
 
     def create_pin(self):
         self.pin = random.randint(1000, 9999)

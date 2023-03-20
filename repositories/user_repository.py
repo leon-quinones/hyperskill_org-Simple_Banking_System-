@@ -11,13 +11,13 @@ class UserRepository:
         if user_data is None:
             return None
         card = CreditCard()
-        card.number: int = user_data[2] if user_data[2] is not None else None
+        card.number = user_data[2] if user_data[2] is not None else None
         user = User()
         user.credit_card = card
-        user.id: int = user_data[0] if user_data[0] is not None else None
-        user.name: str = user_data[1] if user_data[1] is not None else None
-        user.pin: str = user_data[3] if user_data[3] is not None else None
-        user.balance: int = user_data[4] if user_data[4] is not None else None
+        user.id = user_data[0] if user_data[0] is not None else None
+        user.name = user_data[1] if user_data[1] is not None else None
+        user.pin = user_data[3] if user_data[3] is not None else None
+        user.balance = user_data[4] if user_data[4] is not None else None
         return user
 
     def create_user(self, userdto: UserDto):
@@ -30,8 +30,8 @@ class UserRepository:
         # self.cursor.execute('select * from card')
         # print(self.cursor.fetchall())
         self.cursor.execute(find_card_query, (userdto.credit_card.number,))
-        id_card: int = self.cursor.fetchone()
-        self.cursor.execute(user_query, (userdto.name, id_card[0]))
+        id_card = self.cursor.fetchone()[0]
+        self.cursor.execute(user_query, (userdto.name, id_card))
         self.connection.commit()
 
         # self.users[userdto.credit_card.number] = userdto

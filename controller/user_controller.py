@@ -1,8 +1,6 @@
 from collections import namedtuple
-from sqlite3 import OperationalError
-
 from model.credit_card import CreditCard
-from model.user import User, UserDto
+from model.user import User
 from repositories.user_repository import UserRepository
 
 
@@ -20,7 +18,6 @@ class UserController:
             user: User = self.user_repository.find_user_by_credentials(credit_card_number, user_pin)
         except ValueError:
             raise Exception("User not found")
-            user = None
         return user
 
     def create_account(self, user_base_number=250000000, name="John Smith"):
@@ -52,7 +49,7 @@ class UserController:
         return user.balance
 
     def get_card_id(self, user_id: int):
-        return self.user_repository.find_account_by_user_id(user_id);
+        return self.user_repository.find_account_by_user_id(user_id)
 
     def get_account_by_card_number(self, card_number):
         return self.user_repository.find_account_by_card_number(card_number)
