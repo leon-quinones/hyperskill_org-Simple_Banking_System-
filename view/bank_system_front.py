@@ -121,11 +121,16 @@ class Menu:
                 print('Probably you made a mistake in the card number. Please try again!')
                 return True, True
             print(f'Enter how much money you want to transfer:')
+            account_to_transfer_id = self.controller.get_account_by_card_number(card_number)
+            if account_to_transfer_id is None:
+                print('Such a card does not exist.')
+                return  True, True
             transaction_amount = self.get_user_income()
             user_card_id = self.controller.get_card_id(self.user.id)
-            TransactionData = namedtuple('TransactionData', ['user_id', 'user_card_id', 'card_number_to_transfer', 'new_balance'])
+            TransactionData = namedtuple('TransactionData', ['user_id', 'user_card_id', 'account_to_transfer_id',
+                                                             'new_balance'])
             # user_card_id: int, card_number_to_transfer: int, new_balance: int
-            transaction_data = TransactionData(self.user.id, user_card_id, card_number, transaction_amount)
+            transaction_data = TransactionData(self.user.id, user_card_id, account_to_transfer_id, transaction_amount)
             transaction_result = self.controller.make_transaction(transaction_data)
             if transaction_result is False:
                 raise OperationalError('Algo paso! en la database')
@@ -192,9 +197,16 @@ class Menu:
             self.get_user_credentials()
 
         return int(credit_card), int(user_pin)
-
-    def luhn_check(self, credit_card_number: str):
+    @staticmethod
+    def luhn_check(credit_card_number: str):
         card_number = list(map(int, credit_card_number))
-        return True if sum(card_number) % 10 else False
-# menu = Menu()
+        aux = card_number.copy()
+        for i in range(0, len(card_number), 2):
+            c = card_number[i] * 2  # calculate value
+            aux[i] = c - 9 if c > 9 else c
+        print(sum(aux))
+        return True if sum(aux) % 10 == 0 else False
+print(Menu.luhn_check('4000003972196502'))
+print(Menu.luhn_check('4000003972196501'))
+
 # menu.main_menu()

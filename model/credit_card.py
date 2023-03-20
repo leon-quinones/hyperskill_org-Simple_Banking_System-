@@ -14,7 +14,6 @@ class CreditCard:
 
     def build_checksum(self):
         aux = self.__digits.copy()
-        print(aux)
         for i in range(0, len(self.__digits), 2):
             c = self.__digits[i] * 2  # calculate value
             aux[i] = c - 9 if c > 9 else c

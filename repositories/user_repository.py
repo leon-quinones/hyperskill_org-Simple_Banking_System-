@@ -52,7 +52,7 @@ class UserRepository:
         query_result = self.cursor.fetchone()
         if query_result is None:
             return None
-        return query_result[0]
+        return query_result
 
     def find_user_by_credentials(self, credit_card_number: int, user_pin: int):
         query = 'SELECT u.id, name, number, pin, balance FROM user as u ' \

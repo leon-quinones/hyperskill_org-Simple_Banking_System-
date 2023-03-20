@@ -54,19 +54,22 @@ class UserController:
     def get_card_id(self, user_id: int):
         return self.user_repository.find_account_by_user_id(user_id);
 
+    def get_account_by_card_number(self, card_number):
+        return self.user_repository.find_account_by_card_number(card_number)
+
     def make_transaction(self, transaction_data: namedtuple):
-        account_id = self.user_repository.find_account_by_card_number(
-            transaction_data.card_number_to_transfer)
-        if account_id is None:
-            print('Such a card does not exist.')
-            return True
+        # account_id = self.user_repository.find_account_by_card_number(
+        #     transaction_data.card_number_to_transfer)
+        # if account_id is None:
+        #     print('Such a card does not exist.')
+        #     return True
         user = self.user_repository.find_user_by_id(transaction_data.user_id)
         if transaction_data.new_balance > user.balance:
             print('Not enough money!')
             return True
         #            user_card_id: int, card_number_to_transfer: int, new_balance: int
         self.user_repository.update_balance(transaction_data.user_card_id, -1 * transaction_data.new_balance)
-        self.user_repository.update_balance(account_id, transaction_data.new_balance)
+        self.user_repository.update_balance(transaction_data.account_to_transfer_id, transaction_data.new_balance)
         return True
 
     def get_option(self, option: int, **kwargs):
